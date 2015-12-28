@@ -1,7 +1,7 @@
 # clipgo
 指定したテンプレートをクリップボードにコピーできるCLIツール
 
-# 使い方
+## 使い方
 
 ```bash
 # インストール
@@ -15,9 +15,15 @@ clipgo init
 # `templatePath`にmarkdownファイルを突っ込むと準備完了
 clipgo inspect
 
-# コピーする
-clipgo copy -t <テンプレートとなるmarkdownファイル名>
+# テンプレートの内容をコピーする
+clipgo copy <テンプレートとなるmarkdownファイル名>
 
-# コピーできるファイル一覧
+# コピーできるテンプレート一覧
 clipgo list
+
+# コピーできるテンプレートを追加
+clipgo add <追加したいmarkdownファイルへのパス>
+
+# コピーできるテンプレートを削除
+clipgo remove <削除したいテンプレートの名前>
 ```
