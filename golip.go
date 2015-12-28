@@ -30,7 +30,7 @@ type conf struct {
 }
 
 func main() {
-	kingpin.Version("0.1.1")
+	kingpin.Version("0.1.2")
 	switch kingpin.Parse() {
 	case "inspect":
 		inspectConfiguration()
@@ -76,7 +76,7 @@ func addTemplate(pathToTemplate string) {
 
 func inspectConfiguration() {
 	userInfo, _ := user.Current()
-	configurationFile := userInfo.HomeDir + "/.clipgo.json"
+	configurationFile := userInfo.HomeDir + "/.golip.json"
 	bytes, err := ioutil.ReadFile(configurationFile)
 	if err != nil {
 		fmt.Println(err)
@@ -92,7 +92,7 @@ func exists(filename string) bool {
 
 func initialize() {
 	userInfo, _ := user.Current()
-	configurationFile := userInfo.HomeDir + "/.clipgo.json"
+	configurationFile := userInfo.HomeDir + "/.golip.json"
 	if exists(configurationFile) {
 		fmt.Println("既に設定ファルが存在します")
 	} else {
@@ -100,17 +100,17 @@ func initialize() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		configurationBody := `{ "templatePath": "` + userInfo.HomeDir + `/.clipgoTemplate/" }`
+		configurationBody := `{ "templatePath": "` + userInfo.HomeDir + `/.golipTemplate/" }`
 		file.WriteString(configurationBody)
-		os.Mkdir(userInfo.HomeDir+"/.clipgoTemplate", 0777)
-		fmt.Println(userInfo.HomeDir + "/.clipgo.json を作成しました")
-		fmt.Println(userInfo.HomeDir + "/.clipgoTemplate にクリップボードにコピーしたいテンプレートを保存して下さい")
+		os.Mkdir(userInfo.HomeDir+"/.golipTemplate", 0777)
+		fmt.Println(userInfo.HomeDir + "/.golip.json を作成しました")
+		fmt.Println(userInfo.HomeDir + "/.golipTemplate にクリップボードにコピーしたいテンプレートを保存して下さい")
 	}
 }
 
 func getTemplateDir() string {
 	userInfo, _ := user.Current()
-	configurationFile := userInfo.HomeDir + "/.clipgo.json"
+	configurationFile := userInfo.HomeDir + "/.golip.json"
 
 	bytes, err := ioutil.ReadFile(configurationFile)
 	if err != nil {
