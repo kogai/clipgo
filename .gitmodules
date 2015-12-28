@@ -1,0 +1,3 @@
+[submodule "homebrew-golip"]
+	path = homebrew-golip
+	url = git@github.com:kogai/homebrew-golip.git
