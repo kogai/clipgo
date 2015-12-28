@@ -6,6 +6,7 @@ import (
 	"github.com/atotto/clipboard"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"io/ioutil"
+	"os"
 	"os/user"
 	"path/filepath"
 	"regexp"
@@ -13,8 +14,10 @@ import (
 )
 
 var (
+	inspect      = kingpin.Command("inspect", "現在の設定を表示します")
+	initial      = kingpin.Command("init", "クリップボードにコピーするテンプレートの初期設定をします")
 	templateList = kingpin.Command("list", "利用可能なテンプレートの一覧が表示されます")
-	copyCommand  = kingpin.Command("copy", "指定したタグのテンプレートをクリップボードにコピーします").Default()
+	copyCommand  = kingpin.Command("copy", "指定したタグのテンプレートをクリップボードにコピーします")
 	tempalteTag  = copyCommand.Flag("tag", "クリップボードにコピーするテンプレートを指定します").Short('t').String()
 )
 
@@ -25,6 +28,10 @@ type conf struct {
 func main() {
 	kingpin.Version("0.0.1")
 	switch kingpin.Parse() {
+	case "inspect":
+		inspectConfiguration()
+	case "init":
+		initialize()
 	case "list":
 		showTemplates()
 	case "copy":
@@ -32,9 +39,43 @@ func main() {
 	}
 }
 
+func inspectConfiguration() {
+	userInfo, _ := user.Current()
+	configurationFile := userInfo.HomeDir + "/.clipgo.json"
+	bytes, err := ioutil.ReadFile(configurationFile)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(configurationFile)
+	fmt.Println(string(bytes[:len(bytes)]))
+}
+
+func exists(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil
+}
+
+func initialize() {
+	userInfo, _ := user.Current()
+	configurationFile := userInfo.HomeDir + "/.clipgo.json"
+	if exists(configurationFile) {
+		fmt.Println("既に設定ファルが存在します")
+	} else {
+		file, err := os.Create(configurationFile)
+		if err != nil {
+			fmt.Println(err)
+		}
+		configurationBody := `{ "templatePath": "` + userInfo.HomeDir + `/.clipgoTemplate/" }`
+		file.WriteString(configurationBody)
+		os.Mkdir(userInfo.HomeDir+"/.clipgoTemplate", 0777)
+		fmt.Println(userInfo.HomeDir + "/.clipgo.json を作成しました")
+		fmt.Println(userInfo.HomeDir + "/.clipgoTemplate にクリップボードにコピーしたいテンプレートを保存して下さい")
+	}
+}
+
 func getTemplateDir() string {
-	user, _ := user.Current()
-	configurationFile := user.HomeDir + "/.clipgo.json"
+	userInfo, _ := user.Current()
+	configurationFile := userInfo.HomeDir + "/.clipgo.json"
 
 	bytes, err := ioutil.ReadFile(configurationFile)
 	if err != nil {
