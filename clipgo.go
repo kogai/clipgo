@@ -14,11 +14,15 @@ import (
 )
 
 var (
-	inspect      = kingpin.Command("inspect", "現在の設定を表示します")
-	initial      = kingpin.Command("init", "クリップボードにコピーするテンプレートの初期設定をします")
-	templateList = kingpin.Command("list", "利用可能なテンプレートの一覧が表示されます")
-	copyCommand  = kingpin.Command("copy", "指定したタグのテンプレートをクリップボードにコピーします")
-	tempalteTag  = copyCommand.Flag("tag", "クリップボードにコピーするテンプレートを指定します").Short('t').String()
+	inspect          = kingpin.Command("inspect", "現在の設定を表示します")
+	initial          = kingpin.Command("init", "クリップボードにコピーするテンプレートの初期設定をします")
+	templateList     = kingpin.Command("list", "利用可能なテンプレートの一覧が表示されます")
+	copyCommand      = kingpin.Command("copy", "指定したタグのテンプレートをクリップボードにコピーします")
+	tempaltFilename  = copyCommand.Arg("templatename", "クリップボードにコピーするテンプレートを指定します").Required().String()
+	addCommand       = kingpin.Command("add", "指定したファイルをテンプレートとして追加します")
+	templateToAdd    = addCommand.Arg("pathtofile", "").Required().String()
+	removeCommand    = kingpin.Command("remove", "指定したテンプレートを削除します")
+	templateToRemove = removeCommand.Arg("templatename", "").Required().String()
 )
 
 type conf struct {
@@ -35,8 +39,39 @@ func main() {
 	case "list":
 		showTemplates()
 	case "copy":
-		copyTemplate(*tempalteTag)
+		copyTemplate(*tempaltFilename)
+	case "add":
+		addTemplate(*templateToAdd)
+	case "remove":
+		removeTemplate(*templateToRemove)
 	}
+}
+
+func removeTemplate(templateName string) {
+	templateDir := getTemplateDir()
+	removeFilePath := templateDir + templateName + ".md"
+	if !exists(removeFilePath) {
+		fmt.Println("存在しないテンプレートです")
+		return
+	}
+	os.Remove(removeFilePath)
+}
+
+func addTemplate(pathToTemplate string) {
+	_, filename := filepath.Split(pathToTemplate)
+	templateDir := getTemplateDir()
+
+	destFilePath := templateDir + filename
+	if exists(destFilePath) {
+		fmt.Println("既に存在しているテンプレートです")
+		return
+	}
+
+	bytes, err := ioutil.ReadFile(pathToTemplate)
+	if err != nil {
+		fmt.Println(err)
+	}
+	ioutil.WriteFile(destFilePath, bytes, 0644)
 }
 
 func inspectConfiguration() {
@@ -88,9 +123,9 @@ func getTemplateDir() string {
 	return c.Path
 }
 
-func copyTemplate(tag string) error {
+func copyTemplate(templateName string) error {
 	templateDir := getTemplateDir()
-	bytes, err := ioutil.ReadFile(templateDir + tag + ".md")
+	bytes, err := ioutil.ReadFile(templateDir + templateName + ".md")
 	if err != nil {
 		notExist, _ := regexp.MatchString("no such file or directory", err.Error())
 		if notExist {
@@ -102,7 +137,7 @@ func copyTemplate(tag string) error {
 	}
 	s := string(bytes[:len(bytes)])
 	clipboard.WriteAll(s)
-	fmt.Println("クリップボードに[" + tag + ".md] の内容をコピーしました")
+	fmt.Println("クリップボードに[" + templateName + ".md] の内容をコピーしました")
 	return nil
 }
 
