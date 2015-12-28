@@ -30,7 +30,7 @@ type conf struct {
 }
 
 func main() {
-	kingpin.Version("0.1.2")
+	kingpin.Version("0.1.4")
 	switch kingpin.Parse() {
 	case "inspect":
 		inspectConfiguration()
@@ -146,8 +146,15 @@ func showTemplates() {
 	files, err := ioutil.ReadDir(templateDir)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
-	fmt.Println("登録されているテンプレートは...")
+
+	if len(files) == 0 {
+		fmt.Println("登録されているテンプレートがありません")
+	} else {
+		fmt.Println("登録されているテンプレートは...")
+	}
+
 	for _, file := range files {
 		fileName := trimExtension(file.Name())
 		fmt.Println(fileName)
