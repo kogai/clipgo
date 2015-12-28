@@ -1,0 +1,8 @@
+{
+  "cofingurationPath": "./.clipgo",
+  "templates": {
+    "request": "request",
+    "review": "review",
+    "issue": "issue"
+  }
+}
