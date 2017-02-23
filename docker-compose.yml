@@ -1,0 +1,5 @@
+golip:
+  build: .
+  volumes:
+    - ".:$GOPATH/src/app"
+  # command: go run golip.go
