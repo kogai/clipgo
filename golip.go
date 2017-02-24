@@ -3,14 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/atotto/clipboard"
-	"gopkg.in/alecthomas/kingpin.v2"
 	"io/ioutil"
 	"os"
 	"os/user"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/atotto/clipboard"
+	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 var (
